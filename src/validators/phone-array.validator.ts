@@ -7,32 +7,42 @@ import {
 } from 'class-validator';
 
 import { PhoneNumberUtil } from 'google-libphonenumber';
+import { PhoneUtils } from '../utils/phone.utils';
 
-@ValidatorConstraint({ name: 'phone', async: false })
-export class PhoneConstraint implements ValidatorConstraintInterface {
-  validate(value?: string) {
-    if (!value) return false;
-    if (!value.includes('+')) {
-      value = `+${value.trim()}`;
+@ValidatorConstraint({ name: 'phone-array', async: false })
+export class PhoneArrayConstraint implements ValidatorConstraintInterface {
+  validate(value?: string[]) {
+    try {
+      if (!value) return false;
+      value = value.map((phone) => {
+        if (!phone.includes('+')) {
+          return `+${phone.trim()}`;
+        }
+        return PhoneUtils.normalize(phone);
+      });
+      const phoneUtil = PhoneNumberUtil.getInstance();
+      return value.every((phone) => {
+        const phoneNum = phoneUtil.parse(phone);
+        return phoneUtil.isValidNumber(phoneNum);
+      });
+    } catch (e) {
+      return false;
     }
-    const phoneUtil = PhoneNumberUtil.getInstance();
-    const phone = phoneUtil.parse(value);
-    return phoneUtil.isValidNumber(phone);
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return `${validationArguments?.property} must be a valid phone number`;
+    return `${validationArguments?.property} must be a valid array phone number`;
   }
 }
 
-export function IsPhone(validationOptions?: ValidationOptions) {
+export function IsPhoneArray(validationOptions?: ValidationOptions) {
   return function (object: NonNullable<unknown>, propertyName: string) {
     registerDecorator({
-      name: 'isPhone',
+      name: 'isPhoneArray',
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
-      validator: PhoneConstraint,
+      validator: PhoneArrayConstraint,
     });
   };
 }

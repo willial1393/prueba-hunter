@@ -1,4 +1,4 @@
-export class Whatsapp {
+export class Message {
   id: string;
   body: string;
   to: string;
@@ -7,4 +7,5 @@ export class Whatsapp {
   dateSent: Date;
   dateCreated: Date;
   apiVersion: string;
+  subresourceUris: any;
 }

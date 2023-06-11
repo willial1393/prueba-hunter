@@ -1,34 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { WhatsappService } from './whatsapp.service';
 import { CreateWhatsappDto } from './dto/create-whatsapp.dto';
-import { UpdateWhatsappDto } from './dto/update-whatsapp.dto';
+import { GetAllWhatsappDto } from './dto/get-all-whatsapp.dto';
+import { Message } from './entities/message.entity';
 
-@Controller('whatsapp')
+@Controller('/messages')
 export class WhatsappController {
   constructor(private readonly whatsappService: WhatsappService) {}
 
   @Post()
-  create(@Body() createWhatsappDto: CreateWhatsappDto) {
+  create(@Body() createWhatsappDto: CreateWhatsappDto): Promise<Message[]> {
     return this.whatsappService.create(createWhatsappDto);
   }
 
+  @Post('/webhook')
+  receive(@Body() hook: any): Promise<string> {
+    return this.whatsappService.receive(hook);
+  }
+
   @Get()
-  findAll() {
-    return this.whatsappService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.whatsappService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWhatsappDto: UpdateWhatsappDto) {
-    return this.whatsappService.update(+id, updateWhatsappDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.whatsappService.remove(+id);
+  findAll(@Query() params: GetAllWhatsappDto): Promise<Message[]> {
+    return this.whatsappService.findAll(params);
   }
 }

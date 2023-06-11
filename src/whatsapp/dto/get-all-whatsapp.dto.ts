@@ -1,9 +1,21 @@
-import { IsNotEmpty, IsPhoneNumber } from 'class-validator';
+import { IsDefined, IsInt, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsPhone } from '../../validators/phone.validator';
 
-export class CreateWhatsappDto {
-  @IsNotEmpty()
-  body: string;
+export class GetAllWhatsappDto {
+  @IsPhone()
+  @IsDefined()
+  phone?: string;
 
-  @IsPhoneNumber()
-  to: string;
+  @Min(0)
+  @IsInt()
+  @IsDefined()
+  @Type(() => Number)
+  limit: number;
+
+  @Min(0)
+  @IsInt()
+  @IsDefined()
+  @Type(() => Number)
+  page: number;
 }

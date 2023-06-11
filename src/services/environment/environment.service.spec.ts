@@ -15,4 +15,11 @@ describe('EnvironmentService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('should return the value of the environment variable', () => {
+    const key = 'TWILIO_FROM_PHONE';
+    const value = 'test';
+    process.env[key] = value;
+    expect(service.twilioFromPhone()).toBe(value);
+  });
 });
