@@ -28,6 +28,7 @@ describe('FirebaseService', () => {
         dateSent: new Date(),
         dateCreated: new Date(),
         apiVersion: 'v1',
+        subresourceUris: {},
       }),
     ).resolves.not.toThrow();
   });
